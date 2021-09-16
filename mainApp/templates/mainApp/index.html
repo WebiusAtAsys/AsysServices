@@ -1,0 +1,27 @@
+{% extends "mainApp/base.html" %}
+
+{% block title %}Homepage{% endblock %}
+{% load crispy_forms_tags %}
+
+<h1>This is the index page: Put in the report values here</h1>
+
+{% block loggedIn %}
+    <div class="content-section">
+        <form method="POST">
+            {% csrf_token %}
+            <fieldset class="form-group">
+                <legend class="border-bottom  mb-4">Report data</legend>
+                {{ form|crispy }}
+            </fieldset>
+            <div class="form-group">
+                <button class="btn btn-outline-info" type="submit">Create report</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+{% block notLoggedIn %}
+<br><p>You are not logged in. Login<a href="/login"> here</a>. <br> Or <a href="/register">create</a> an account.</p>
+{% endblock %}
+
+
