@@ -144,3 +144,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 #This is the public url via which the media will be accesses through the browser
 MEDIA_URL = '/media/'
+
+#tell django where to find the user model: appName.className
+AUTH_USER_MODEL = "usersApp.User" 

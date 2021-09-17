@@ -1,7 +1,7 @@
 {% extends "mainApp/base.html" %}
-
-{% block title %}Homepage{% endblock %}
 {% load crispy_forms_tags %}
+
+{% block title %}Auto-Report-Home{% endblock %}
 
 <h1>This is the index page: Put in the report values here</h1>
 
@@ -14,7 +14,7 @@
                 {{ form|crispy }}
             </fieldset>
             <div class="form-group">
-                <button class="btn btn-outline-info" type="submit">Create report</button>
+                <button class="btn btn-outline-primary" type="submit">Create report</button>
             </div>
         </form>
     </div>

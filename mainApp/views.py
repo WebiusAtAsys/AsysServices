@@ -21,6 +21,7 @@ def index(request):
 
             return redirect('preview')
     else:
+        #method was GET. Send an empty form
         repForm = ReportForm()
     return render(request, "mainApp/index.html", {"form": repForm})
 
