@@ -29,12 +29,6 @@
             height: 250px;
             width: auto;
         }
-
-        .heading {
-            height: 200px;
-            width: auto;
-        }
-
     </style>
 
     <title>{% block title %}{% endblock %}</title>
@@ -68,11 +62,17 @@
         </div>
     </nav>
 
-
     <div id ="header", name ="header", class="container-fluid">
         <div class="row justify-content-center">
             <h1>Welcome to Auto Report</h1>
         </div>
+
+        <!--Display messages if available-->
+        {% if messages %}
+            {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
 
         <div class="row justify-content-center">
             {% load static %}
