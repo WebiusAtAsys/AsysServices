@@ -34,7 +34,8 @@ class Report(models.Model):
     #this is the function which django tries to call after the submission of a post
     #reverse will return a path as a string so the view knows where to go
     def get_absolute_url(self):
-        return reverse('preview')
+        return reverse('report-detail', kwargs={'pk': self.pk})
+
 
     # def save(self, *args, **kwargs):
     #     super().save(*args, **kwargs)

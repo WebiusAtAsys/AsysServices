@@ -6,3 +6,4 @@ from PIL import Image
 
 class User(AbstractUser):
     phone_number = models.CharField(unique=True, null=True, max_length=20)
+    has_reports = models.BooleanField(default=False)
