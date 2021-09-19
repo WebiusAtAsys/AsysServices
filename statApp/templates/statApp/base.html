@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- semantic UI -->
+    <link rel="stylesheet" type='text/css' href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.14/semantic.min.css">
+    
+    <!--Bootstrap CSS-->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" 
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    
+    <!--Chart js-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" integrity="sha256-Uv9BNBucvCPipKQ2NS9wYpJmi8DTOEfTA/nH2aoJALw=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css" integrity="sha256-aa0xaJgmK/X74WM224KMQeNQC2xYKwlAt08oZqjeF0E=" crossorigin="anonymous" />
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+    <style type="text/css">
+        div#content {
+            padding-top: 60px;
+        }
+    </style>
+
+    <title>{% block title %}{% endblock %}</title>
+  </head>
+
+  <body>
+
+    <!--Navigation Bar-->
+    <nav class="navbar fixed-top navbar-expand-sm navbar-light bg-light">
+        <div class="container-fluid">
+            <!--Text in nav bar-->
+            <a class="navbar-brand" href="/">
+                Auto-Report
+            </a>
+            <!--Burger Menu-->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTarget" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <!--Links-->
+            <div class="collapse navbar-collapse" id="navbarTarget">
+                <div class="navbar-nav">
+                    <a class="nav-link active" aria-current="page" href="/">Create Report</a>
+                    {% if user.is_authenticated %}
+                    <a class="nav-link" href="/profile">Profile</a>
+                    <a class="nav-link" href="/reports">My Reports</a>
+                    <a class="nav-link" href="/statistics">Statistics</a>
+                    <a class="nav-link" href="/logout">Logout</a>
+                    {% else %}
+                    <a class="nav-link" href="/login">Login</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div id ="content", name ="content", class="container-fluid">
+        <div class="row justify-content-center">
+            {% if user.is_authenticated %}
+                {% block loggedIn %}
+                {% endblock %}
+            {% else %}
+                {% block notLoggedIn %}
+                {% endblock %}
+            {% endif %}
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-sm-8">
+                {% block scripts %}
+                {% endblock %}
+
+                {% block content %}
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+
+    </body>
+</html>
