@@ -6,13 +6,22 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views import View
 from django.views.generic import ListView, DetailView, UpdateView, DeleteView
+#needed for file handling
+from django.http import FileResponse
+from django.core.files.base import ContentFile
+import io
+from reportlab.pdfgen import canvas
+from reportlab.lib.units import inch
+from reportlab.lib.pagesizes import letter
+from django.http import FileResponse
+#from . import pdf_creater
 
 # Create your views here.
 class ReportCreateView(LoginRequiredMixin, View):
     form_class = ReportForm
     initial = {}
     template_name = 'mainApp/index.html' #by default django will look in <app>/<model>_<viewtype>.html
-    fields = ['title', 'description', 'laserSource', 'image']
+    #fields = ['date', 'title', 'description', 'beamSource', 'image1']
     def get(self, request, *args, **kwargs):
         #GET method
         repForm = self.form_class(initial=self.initial)
@@ -23,24 +32,49 @@ class ReportCreateView(LoginRequiredMixin, View):
         repForm = self.form_class(request.POST, request.FILES)
         #note in form which user created it
         repForm.instance.author = self.request.user
+        #check if submitted form is valid
         if repForm.is_valid():
-            repForm.save()
+            #create report instance but dont send it to database yet, cause
+            #there is more to be added
+            report = repForm.save(commit=False)
+
+            #generate pdf here
+            buf = io.BytesIO()
+            c = canvas.Canvas(buf, pagesize=letter, bottomup=0)
+            textobj = c.beginText()
+            textobj.setTextOrigin(inch, inch)
+            textobj.setFont("Helvetica", 14)
+            #queryset = Report.objects.filter(author=self.request.user)
+            lines = [
+                repForm.instance.title,
+                repForm.instance.description,
+            ]
+            for line in lines:
+                textobj.textLine(line)
+
+            c.drawText(textobj)
+            c.showPage()
+            c.save()
+            buf.seek(0)
+            #create a new report instance (instance = model-object)
+            #with the author beeing the user submitting the form
+            report.pdf.save("report.pdf", buf)
+            report.save()
+            #get the primary key of the just saved report for redirection
+            pk = report.id
             #set the user has reports field to true and save it
             self.request.user.has_reports = True
             self.request.user.save()
-            print("Report saved!!")
             messages.success(request, f'Your report has been created')
-            #generate the pdf here
-            # first_name = request.user.first_name
-            # last_name = request.user.last_name
-            # title = form.cleaned_data.get('title')
+            print("Report saved!")
         else:
             print("Fail")
             messages.error(request, f'Report could not be created. Please check your entries')
             context = {"form" : repForm}
             return render(request, self.template_name, context)
-        context = {"form": repForm}
-        return redirect("reports")
+        url = 'report/' + str(pk) + '/download'
+        return redirect(url)
+        #return redirect('reports') uncomment this line to change redirection to report list
 
 
 class ReportListView(ListView):
@@ -56,11 +90,14 @@ class ReportDetailView(DetailView):
     template_name = "mainApp/report_detail.html"
     fields = '__all__'
 
+
 class ReportUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     #tell the class what objects to query, cause needed for the list:
     model = Report
     template_name = "mainApp/report_update.html"
-    fields = '__all__'
+    fields = ['date', 'title', 'description', 'customerId', 'customerName', 'customerStreet', 'customerPlz', 'customerTel', 'customerEmail',
+    'task', 'material', 'numberParts', 'machine', 'microscope', 'beamSource', 'wavelength', 'maxPower', 'beamExpander', 'lens', 'spotSize',
+    'scanField', 'sampleWidth', 'sampleHeigth', 'sampleThickness', 'image1']
 
     def test_func(self):
         report = self.get_object()
@@ -74,5 +111,8 @@ class ReportDeleteView(LoginRequiredMixin, DeleteView):
     template_name = "mainApp/report_confirm_delete.html"
     success_url = '/'
 
-# def preview(request):
-#     return render(request, "mainApp/preview.html")
+
+def download(request, pk):
+    report = Report.objects.get(pk=pk)
+    request = FileResponse(open(report.pdf.path, 'rb'))
+    return request

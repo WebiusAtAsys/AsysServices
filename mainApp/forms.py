@@ -9,4 +9,5 @@ class ReportForm(forms.ModelForm):
 
     class Meta:
         model = Report
-        fields = ['date', 'title', 'description', 'laserSource', 'machine', 'image']
+        #fields = '__all__'
+        exclude = ('author', 'pdf',)

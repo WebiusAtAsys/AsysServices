@@ -11,7 +11,9 @@
                 <!--here the reports could be filtered by: if rep.author == ?-->
                 {% if rep.author == user %}
                     <article class="media content-section">
-                        <img class="rounded-circle article-img" src="{{ rep.image.url }}" alt="">
+                        {% if rep.image1 %}
+                            <img class="rounded-circle article-img" src="{{ rep.image1.url }}" alt="">
+                        {% endif %}
                         <div class="media-body">
                             <div class="article-metadata">
                                 <p>{{ rep.author }}</p>
