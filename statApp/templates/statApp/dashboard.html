@@ -16,7 +16,7 @@ $(document).ready(function(){
         data: {
             labels: {{labels|safe}},
             datasets: [{
-                label: 'Letters in description',
+                label: 'Number of reports',
                 data: {{data|safe}},
                 backgroundColor: [
                     'rgba(255, 99, 132, 0.2)',
@@ -39,9 +39,16 @@ $(document).ready(function(){
         },
         options: {
             scales: {
-                y: {
-                    beginAtZero: true
-                }
+                yAxes: 
+                [{
+                    display: true,
+                    ticks: 
+                    {
+                        suggestedMin: 0,    // minimum will be 0, unless there is a lower value.
+                        // OR //
+                        beginAtZero: true   // minimum value will be 0.
+                    }
+                }]
             }
         }
     });

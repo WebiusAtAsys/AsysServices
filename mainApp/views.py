@@ -76,7 +76,6 @@ class ReportCreateView(LoginRequiredMixin, View):
         return redirect(url)
         #return redirect('reports') uncomment this line to change redirection to report list
 
-
 class ReportListView(ListView):
     #tell the class what objects to query, cause needed for the list:
     model = Report
@@ -90,7 +89,6 @@ class ReportDetailView(DetailView):
     template_name = "mainApp/report_detail.html"
     fields = '__all__'
 
-
 class ReportUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     #tell the class what objects to query, cause needed for the list:
     model = Report
@@ -98,6 +96,49 @@ class ReportUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     fields = ['date', 'title', 'description', 'customerId', 'customerName', 'customerStreet', 'customerPlz', 'customerTel', 'customerEmail',
     'task', 'material', 'numberParts', 'machine', 'microscope', 'beamSource', 'wavelength', 'maxPower', 'beamExpander', 'lens', 'spotSize',
     'scanField', 'sampleWidth', 'sampleHeigth', 'sampleThickness', 'image1']
+    
+    #if receiving a post request this means the user wants to update a report
+    def post(self, request, pk, *args, **kwargs):
+        #POST method
+        repForm = ReportForm(request.POST, request.FILES)
+        #check if submitted form is valid
+        if repForm.is_valid():
+            #get the instance which shall be updated:
+            report = Report.objects.get(pk=pk) #self.get_object().id
+            #update the instance with the new values
+            for key, value in repForm.cleaned_data.items():
+                setattr(report, key, value)
+
+            #generate the new pdf
+            buf = io.BytesIO()
+            c = canvas.Canvas(buf, pagesize=letter, bottomup=0)
+            textobj = c.beginText()
+            textobj.setTextOrigin(inch, inch)
+            textobj.setFont("Helvetica", 14)
+            #queryset = Report.objects.filter(author=self.request.user)
+            lines = [
+                repForm.instance.title,
+                repForm.instance.description,
+            ]
+            for line in lines:
+                textobj.textLine(line)
+
+            c.drawText(textobj)
+            c.showPage()
+            c.save()
+            buf.seek(0)
+            report.pdf.save("report.pdf", buf)
+            #save the updated instance
+            report.save()
+            messages.success(request, f'Your report has been updated')
+            print("Report saved!")
+        else:
+            print("Fail")
+            messages.error(request, f'Report could not be updated. Please check your entries')
+            context = {"form" : repForm}
+            return render(request, self.template_name, context)
+        #url = 'report/' + str(pk) + "/"
+        return redirect("reports")
 
     def test_func(self):
         report = self.get_object()
@@ -110,7 +151,6 @@ class ReportDeleteView(LoginRequiredMixin, DeleteView):
     model = Report
     template_name = "mainApp/report_confirm_delete.html"
     success_url = '/'
-
 
 def download(request, pk):
     report = Report.objects.get(pk=pk)
