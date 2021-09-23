@@ -8,7 +8,7 @@ from django.views import View
 from django.views.generic import ListView, DetailView, UpdateView, DeleteView
 #needed for file handling
 from django.http import FileResponse
-from django.core.files.base import ContentFile
+#from django.core.files.base import ContentFile
 import io
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch
@@ -46,8 +46,8 @@ class ReportCreateView(LoginRequiredMixin, View):
             textobj.setFont("Helvetica", 14)
             #queryset = Report.objects.filter(author=self.request.user)
             lines = [
-                repForm.instance.title,
-                repForm.instance.description,
+                repForm.cleaned_data['title'],
+                repForm.cleaned_data['description'],
             ]
             for line in lines:
                 textobj.textLine(line)
@@ -117,8 +117,8 @@ class ReportUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
             textobj.setFont("Helvetica", 14)
             #queryset = Report.objects.filter(author=self.request.user)
             lines = [
-                repForm.instance.title,
-                repForm.instance.description,
+                repForm.cleaned_data['title'],
+                repForm.cleaned_data['description'],
             ]
             for line in lines:
                 textobj.textLine(line)

@@ -1,0 +1,35 @@
+{% extends "mainApp/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}Configure{% endblock %}
+
+{% block Content %}
+
+<form method="POST" enctype="multipart/form-data">
+  
+    <!-- Security token -->
+    {% csrf_token %}
+  
+    <!-- Using the formset -->
+    {{ form.as_p }}
+      
+    <input type="submit" value="Submit">
+</form>
+<hr style="height:4px;border:none;color:#333;background-color:#333;">
+
+
+<!--
+    <form method="POST">
+        {% csrf_token %}
+        <fieldset class="form-group">
+            <legend class="border-bottom  mb-4">Text blocks</legend>
+            {{ form|crispy }}
+        </fieldset>
+        <div class="form-group">
+            <button class="btn btn-primary" type="submit">Sign up</button>
+        </div>
+    </form>
+-->
+{% endblock %}
+
+

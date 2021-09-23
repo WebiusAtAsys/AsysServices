@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'mainApp.apps.MainappConfig',
     'usersApp.apps.UsersappConfig',
     'statApp.apps.StatappConfig',
+    'configApp.apps.ConfigappConfig',
     'crispy_forms'
 ]
 
